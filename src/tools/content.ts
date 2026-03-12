@@ -34,7 +34,7 @@ export async function ckListArticles(
 
     for (const slug of slugs) {
       try {
-        const article = readArticle(bundlePath(config.content.dir, slug));
+        const article = readArticle(bundlePath(config.content.dir, slug), config.content.sourceFile);
         const fm = article.frontmatter;
 
         if (args.status && fm.status !== args.status) continue;
@@ -69,11 +69,11 @@ export async function ckGetArticle(
   args: { slug: string }
 ): Promise<Result<Article>> {
   const bPath = bundlePath(config.content.dir, args.slug);
-  if (!existsSync(join(bPath, "index.md"))) {
+  if (!existsSync(join(bPath, config.content.sourceFile))) {
     return { ok: false, error: `Article not found: ${args.slug}` };
   }
   try {
-    return { ok: true, data: readArticle(bPath) };
+    return { ok: true, data: readArticle(bPath, config.content.sourceFile) };
   } catch (err) {
     return { ok: false, error: String(err) };
   }
@@ -113,7 +113,7 @@ export async function ckCreateArticle(
       ...(args.author && { author: args.author }),
     };
 
-    createArticleFile(bPath, fm);
+    createArticleFile(bPath, fm, "", config.content.sourceFile);
 
     return { ok: true, data: { slug: args.slug, bundlePath: bPath } };
   } catch (err) {
@@ -134,14 +134,14 @@ export async function ckUpdateArticle(
   args: UpdateArgs
 ): Promise<Result<{ slug: string }>> {
   const bPath = bundlePath(config.content.dir, args.slug);
-  if (!existsSync(join(bPath, "index.md"))) {
+  if (!existsSync(join(bPath, config.content.sourceFile))) {
     return { ok: false, error: `Article not found: ${args.slug}` };
   }
   try {
-    const article = readArticle(bPath);
+    const article = readArticle(bPath, config.content.sourceFile);
     const updatedFm = { ...article.frontmatter, ...(args.frontmatter ?? {}) };
     const updatedBody = args.body ?? article.body;
-    writeArticle(bPath, updatedFm, updatedBody);
+    writeArticle(bPath, updatedFm, updatedBody, config.content.sourceFile);
     return { ok: true, data: { slug: args.slug } };
   } catch (err) {
     return { ok: false, error: String(err) };
@@ -155,11 +155,11 @@ export async function ckSetStatus(
   args: { slug: string; status: ArticleStatus }
 ): Promise<Result<{ slug: string; oldStatus: ArticleStatus; newStatus: ArticleStatus; warning?: string }>> {
   const bPath = bundlePath(config.content.dir, args.slug);
-  if (!existsSync(join(bPath, "index.md"))) {
+  if (!existsSync(join(bPath, config.content.sourceFile))) {
     return { ok: false, error: `Article not found: ${args.slug}` };
   }
   try {
-    const article = readArticle(bPath);
+    const article = readArticle(bPath, config.content.sourceFile);
     const oldStatus = article.frontmatter.status;
     const newStatus = args.status;
 
@@ -167,7 +167,7 @@ export async function ckSetStatus(
       ([from, to]) => from === oldStatus && to === newStatus
     );
 
-    writeArticle(bPath, { ...article.frontmatter, status: newStatus }, article.body);
+    writeArticle(bPath, { ...article.frontmatter, status: newStatus }, article.body, config.content.sourceFile);
 
     const result: { slug: string; oldStatus: ArticleStatus; newStatus: ArticleStatus; warning?: string } = {
       slug: args.slug,

@@ -50,5 +50,8 @@ export function loadConfig(): ContentkeeperConfig {
   config.staging.dir = resolve(projectRoot, config.staging.dir);
   config.build.outputDir = resolve(projectRoot, config.build.outputDir);
 
+  // Default sourceFile for projects that don't specify it
+  config.content.sourceFile ??= "index.md";
+
   return config;
 }

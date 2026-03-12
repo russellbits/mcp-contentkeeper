@@ -7,7 +7,7 @@
   "scripts": {
     "start": "bun src/index.ts",
     "dev": "bun --watch src/index.ts",
-    "inspect": "npx @modelcontextprotocol/inspector bun src/index.ts",
+    "inspect": "CK_PROJECT=$HOME/Development/banapana npx @modelcontextprotocol/inspector bun src/index.ts",
     "typecheck": "bun tsc --noEmit"
   },
   "dependencies": {

@@ -42,12 +42,12 @@ export async function ckPipelineStatus(
   _args: Record<string, never>
 ): Promise<Result<PipelineStatus>> {
   try {
-    const slugs = listBundles(config.content.dir);
+    const slugs = listBundles(config.content.dir, config.content.sourceFile);
     const byStatus: Partial<Record<ArticleStatus, number>> = {};
 
     for (const slug of slugs) {
       try {
-        const article = readArticle(bundlePath(config.content.dir, slug));
+        const article = readArticle(bundlePath(config.content.dir, slug), config.content.sourceFile);
         const status = article.frontmatter.status;
         byStatus[status] = (byStatus[status] ?? 0) + 1;
       } catch (err) {

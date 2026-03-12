@@ -68,6 +68,7 @@ export interface ContentConfig {
     dir: string; // relative to project root
     extension: string; // ".md"
     defaultStatus: ArticleStatus;
+    sourceFile: string; // filename of the canonical article file — e.g. "index.md", "article.md", "essay.md"
 }
 
 export interface StagingConfig {

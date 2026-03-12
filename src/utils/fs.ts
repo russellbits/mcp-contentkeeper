@@ -7,8 +7,8 @@ import {
 } from "fs";
 import { join, dirname } from "path";
 
-/** List slug names (subdir names) that contain an index.md. Excludes dot-dirs. */
-export function listBundles(contentDir: string): string[] {
+/** List slug names (subdir names) that contain the source file. Excludes dot-dirs. */
+export function listBundles(contentDir: string, sourceFile = "index.md"): string[] {
   if (!existsSync(contentDir)) return [];
   return readdirSync(contentDir).filter((entry) => {
     if (entry.startsWith(".")) return false;
@@ -16,7 +16,7 @@ export function listBundles(contentDir: string): string[] {
     try {
       return (
         statSync(entryPath).isDirectory() &&
-        existsSync(join(entryPath, "index.md"))
+        existsSync(join(entryPath, sourceFile))
       );
     } catch {
       return false;

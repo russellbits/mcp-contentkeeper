@@ -3,11 +3,9 @@ import { readFileSync, writeFileSync, readdirSync } from "fs";
 import { join, basename } from "path";
 import type { Article, ArticleFrontmatter } from "../types.ts";
 
-const INDEX_FILE = "index.md";
-
-export function readArticle(bundlePath: string): Article {
-  const indexPath = join(bundlePath, INDEX_FILE);
-  const raw = readFileSync(indexPath, "utf8");
+export function readArticle(bundlePath: string, sourceFile = "index.md"): Article {
+  const articlePath = join(bundlePath, sourceFile);
+  const raw = readFileSync(articlePath, "utf8");
   const parsed = matter(raw);
   const frontmatter = parsed.data as ArticleFrontmatter;
   const slug = basename(bundlePath);
@@ -27,19 +25,21 @@ export function readArticle(bundlePath: string): Article {
 export function createArticleFile(
   bundlePath: string,
   frontmatter: Record<string, unknown>,
-  body = ""
+  body = "",
+  sourceFile = "index.md"
 ): void {
-  writeFileSync(join(bundlePath, INDEX_FILE), matter.stringify(body, frontmatter), "utf8");
+  writeFileSync(join(bundlePath, sourceFile), matter.stringify(body, frontmatter), "utf8");
 }
 
 export function writeArticle(
   bundlePath: string,
   frontmatter: ArticleFrontmatter,
-  body: string
+  body: string,
+  sourceFile = "index.md"
 ): void {
   const withModified: ArticleFrontmatter = {
     ...frontmatter,
     modified: new Date().toISOString(),
   };
-  writeFileSync(join(bundlePath, INDEX_FILE), matter.stringify(body, withModified), "utf8");
+  writeFileSync(join(bundlePath, sourceFile), matter.stringify(body, withModified), "utf8");
 }
