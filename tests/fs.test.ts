@@ -10,6 +10,10 @@ beforeAll(() => {
   mkdirSync(join(tmpDir, "bundles", "my-article", "media"), { recursive: true });
   writeFileSync(join(tmpDir, "bundles", "my-article", "index.md"), "# hello");
   writeFileSync(join(tmpDir, "bundles", "my-article", "media", "cover.jpg"), "fake-img");
+
+  // Create a separate bundle for the moveBundle test
+  mkdirSync(join(tmpDir, "bundles", "move-me"), { recursive: true });
+  writeFileSync(join(tmpDir, "bundles", "move-me", "index.md"), "# move me");
 });
 
 afterAll(() => rmSync(tmpDir, { recursive: true, force: true }));
@@ -32,8 +36,8 @@ describe("fs utils", () => {
   });
 
   it("moveBundle moves directory atomically", () => {
-    const src = join(tmpDir, "bundles", "my-article");
-    const dest = join(tmpDir, "bundles", ".trash", "my-article");
+    const src = join(tmpDir, "bundles", "move-me");
+    const dest = join(tmpDir, "bundles", ".trash", "move-me");
     moveBundle(src, dest);
     expect(existsSync(dest)).toBe(true);
     expect(existsSync(src)).toBe(false);
