@@ -1,7 +1,6 @@
-import { existsSync, mkdirSync, writeFileSync, readdirSync } from "fs";
+import { existsSync, mkdirSync, readdirSync } from "fs";
 import { join } from "path";
-import matter from "gray-matter";
-import { readArticle, writeArticle } from "../utils/frontmatter.ts";
+import { readArticle, writeArticle, createArticleFile } from "../utils/frontmatter.ts";
 import { listBundles, bundlePath, ensureMediaDir, moveBundle } from "../utils/fs.ts";
 import { log } from "../utils/log.ts";
 import {
@@ -114,7 +113,7 @@ export async function ckCreateArticle(
       ...(args.author && { author: args.author }),
     };
 
-    writeFileSync(join(bPath, "index.md"), matter.stringify("", fm));
+    createArticleFile(bPath, fm);
 
     return { ok: true, data: { slug: args.slug, bundlePath: bPath } };
   } catch (err) {

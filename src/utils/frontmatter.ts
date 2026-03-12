@@ -24,6 +24,14 @@ export function readArticle(bundlePath: string): Article {
   return { slug, frontmatter, body: parsed.content, bundlePath, mediaFiles };
 }
 
+export function createArticleFile(
+  bundlePath: string,
+  frontmatter: Record<string, unknown>,
+  body = ""
+): void {
+  writeFileSync(join(bundlePath, INDEX_FILE), matter.stringify(body, frontmatter), "utf8");
+}
+
 export function writeArticle(
   bundlePath: string,
   frontmatter: ArticleFrontmatter,

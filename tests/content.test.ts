@@ -73,6 +73,30 @@ describe("ck_list_articles", () => {
       expect(result.data[0].slug).toBe("art-ready");
     }
   });
+
+  it("filters by tag", async () => {
+    const config = makeConfig();
+    writeBundle(config.content.dir, "tagged", { title: "Tagged", status: "draft", created: "2026-01-01T00:00:00.000Z", modified: "2026-01-01T00:00:00.000Z", tags: ["tech"] }, ".");
+    writeBundle(config.content.dir, "untagged", { title: "Untagged", status: "draft", created: "2026-01-01T00:00:00.000Z", modified: "2026-01-01T00:00:00.000Z" }, ".");
+    const result = await ckListArticles(config, { tag: "tech" });
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0].slug).toBe("tagged");
+    }
+  });
+
+  it("sets hasMedia true when media files exist", async () => {
+    const config = makeConfig();
+    writeBundle(config.content.dir, "with-media", { title: "W", status: "draft", created: "2026-01-01T00:00:00.000Z", modified: "2026-01-01T00:00:00.000Z" }, ".");
+    writeFileSync(join(config.content.dir, "with-media", "media", "cover.jpg"), "img");
+    const result = await ckListArticles(config, {});
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      const article = result.data.find(a => a.slug === "with-media");
+      expect(article?.hasMedia).toBe(true);
+    }
+  });
 });
 
 describe("ck_get_article", () => {
@@ -103,6 +127,11 @@ describe("ck_create_article", () => {
     expect(result.ok).toBe(true);
     expect(existsSync(join(config.content.dir, "new-post", "index.md"))).toBe(true);
     expect(existsSync(join(config.content.dir, "new-post", "media"))).toBe(true);
+    const raw = readFileSync(join(config.content.dir, "new-post", "index.md"), "utf8");
+    const parsed = matter(raw);
+    expect(parsed.data.title).toBe("New Post");
+    expect(parsed.data.status).toBe("draft");
+    expect(new Date(parsed.data.created as string).getTime()).toBeGreaterThan(Date.now() - 5000);
   });
 
   it("errors if bundle already exists", async () => {
