@@ -1,7 +1,14 @@
-import { describe, it, expect, spyOn, beforeEach } from "bun:test";
+import { describe, it, expect, spyOn, beforeAll, beforeEach } from "bun:test";
 
 describe("log", () => {
+  let log: any;
   let spy: any;
+
+  beforeAll(async () => {
+    // Hoist module import to capture any initialization writes
+    const imported = await import("../src/utils/log.ts");
+    log = imported.log;
+  });
 
   beforeEach(() => {
     // Clear any previous spy
@@ -10,8 +17,7 @@ describe("log", () => {
     }
   });
 
-  it("writes info to stderr", async () => {
-    const { log } = await import("../src/utils/log.ts");
+  it("writes info to stderr", () => {
     spy = spyOn(process.stderr, "write");
     log.info("hello");
     const calls = spy.mock.calls;
@@ -20,8 +26,7 @@ describe("log", () => {
     expect(calls[calls.length - 1][0]).toContain("hello");
   });
 
-  it("writes error to stderr", async () => {
-    const { log } = await import("../src/utils/log.ts");
+  it("writes error to stderr", () => {
     spy = spyOn(process.stderr, "write");
     log.error("boom");
     const calls = spy.mock.calls;
