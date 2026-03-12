@@ -1,0 +1,26 @@
+{
+  "name": "contentkeeper",
+  "version": "0.1.0",
+  "description": "MCP server for flat-file publishing site content lifecycle management",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "bun src/index.ts",
+    "dev": "bun --watch src/index.ts",
+    "inspect": "npx @modelcontextprotocol/inspector bun src/index.ts",
+    "typecheck": "bun tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "latest",
+    "basic-ftp": "latest",
+    "gray-matter": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/gray-matter": "latest",
+    "typescript": "latest"
+  },
+  "keywords": ["mcp", "publishing", "content", "cms", "static-site"],
+  "license": "MIT"
+}
