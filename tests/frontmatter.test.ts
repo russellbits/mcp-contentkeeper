@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll, afterAll } from "bun:test";
 import { writeFileSync, mkdirSync, rmSync, readFileSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
+import { readArticle, writeArticle } from "../src/utils/frontmatter.ts";
 
 const tmpDir = join(tmpdir(), "ck-fm-" + Date.now());
 
@@ -10,7 +11,6 @@ afterAll(() => rmSync(tmpDir, { recursive: true, force: true }));
 
 describe("frontmatter utils", () => {
   it("readArticle parses frontmatter and body", () => {
-    const { readArticle } = require("../src/utils/frontmatter.ts");
     const bundlePath = join(tmpDir, "test-bundle");
     mkdirSync(bundlePath, { recursive: true });
     writeFileSync(
@@ -25,7 +25,6 @@ describe("frontmatter utils", () => {
   });
 
   it("writeArticle round-trips without data loss", () => {
-    const { readArticle, writeArticle } = require("../src/utils/frontmatter.ts");
     const bundlePath = join(tmpDir, "test-bundle2");
     mkdirSync(bundlePath, { recursive: true });
     writeFileSync(
@@ -41,7 +40,6 @@ describe("frontmatter utils", () => {
   });
 
   it("writeArticle auto-updates modified timestamp", () => {
-    const { readArticle, writeArticle } = require("../src/utils/frontmatter.ts");
     const bundlePath = join(tmpDir, "test-bundle3");
     mkdirSync(bundlePath, { recursive: true });
     writeFileSync(
