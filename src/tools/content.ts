@@ -1,7 +1,16 @@
 import { existsSync, mkdirSync, readdirSync } from "fs";
 import { join } from "path";
-import { readArticle, writeArticle, createArticleFile } from "../utils/frontmatter.ts";
-import { listBundles, bundlePath, ensureMediaDir, moveBundle } from "../utils/fs.ts";
+import {
+  readArticle,
+  writeArticle,
+  createArticleFile,
+} from "../utils/frontmatter.ts";
+import {
+  listBundles,
+  bundlePath,
+  ensureMediaDir,
+  moveBundle,
+} from "../utils/fs.ts";
 import { log } from "../utils/log.ts";
 import {
   UNUSUAL_TRANSITIONS,
@@ -26,7 +35,7 @@ interface ListArgs {
 
 export async function ckListArticles(
   config: ContentkeeperConfig,
-  args: ListArgs
+  args: ListArgs,
 ): Promise<Result<ArticleSummary[]>> {
   try {
     const slugs = listBundles(config.content.dir, config.content.sourceFile);
@@ -34,7 +43,10 @@ export async function ckListArticles(
 
     for (const slug of slugs) {
       try {
-        const article = readArticle(bundlePath(config.content.dir, slug), config.content.sourceFile);
+        const article = readArticle(
+          bundlePath(config.content.dir, slug),
+          config.content.sourceFile,
+        );
         const fm = article.frontmatter;
 
         if (args.status && fm.status !== args.status) continue;
@@ -66,7 +78,7 @@ export async function ckListArticles(
 
 export async function ckGetArticle(
   config: ContentkeeperConfig,
-  args: { slug: string }
+  args: { slug: string },
 ): Promise<Result<Article>> {
   const bPath = bundlePath(config.content.dir, args.slug);
   if (!existsSync(join(bPath, config.content.sourceFile))) {
@@ -91,7 +103,7 @@ interface CreateArgs {
 
 export async function ckCreateArticle(
   config: ContentkeeperConfig,
-  args: CreateArgs
+  args: CreateArgs,
 ): Promise<Result<{ slug: string; bundlePath: string }>> {
   const bPath = bundlePath(config.content.dir, args.slug);
   if (existsSync(bPath)) {
@@ -131,7 +143,7 @@ interface UpdateArgs {
 
 export async function ckUpdateArticle(
   config: ContentkeeperConfig,
-  args: UpdateArgs
+  args: UpdateArgs,
 ): Promise<Result<{ slug: string }>> {
   const bPath = bundlePath(config.content.dir, args.slug);
   if (!existsSync(join(bPath, config.content.sourceFile))) {
@@ -152,8 +164,15 @@ export async function ckUpdateArticle(
 
 export async function ckSetStatus(
   config: ContentkeeperConfig,
-  args: { slug: string; status: ArticleStatus }
-): Promise<Result<{ slug: string; oldStatus: ArticleStatus; newStatus: ArticleStatus; warning?: string }>> {
+  args: { slug: string; status: ArticleStatus },
+): Promise<
+  Result<{
+    slug: string;
+    oldStatus: ArticleStatus;
+    newStatus: ArticleStatus;
+    warning?: string;
+  }>
+> {
   const bPath = bundlePath(config.content.dir, args.slug);
   if (!existsSync(join(bPath, config.content.sourceFile))) {
     return { ok: false, error: `Article not found: ${args.slug}` };
@@ -164,12 +183,22 @@ export async function ckSetStatus(
     const newStatus = args.status;
 
     const isUnusual = UNUSUAL_TRANSITIONS.some(
-      ([from, to]) => from === oldStatus && to === newStatus
+      ([from, to]) => from === oldStatus && to === newStatus,
     );
 
-    writeArticle(bPath, { ...article.frontmatter, status: newStatus }, article.body, config.content.sourceFile);
+    writeArticle(
+      bPath,
+      { ...article.frontmatter, status: newStatus },
+      article.body,
+      config.content.sourceFile,
+    );
 
-    const result: { slug: string; oldStatus: ArticleStatus; newStatus: ArticleStatus; warning?: string } = {
+    const result: {
+      slug: string;
+      oldStatus: ArticleStatus;
+      newStatus: ArticleStatus;
+      warning?: string;
+    } = {
       slug: args.slug,
       oldStatus,
       newStatus,
@@ -189,7 +218,7 @@ export async function ckSetStatus(
 
 export async function ckDeleteArticle(
   config: ContentkeeperConfig,
-  args: { slug: string }
+  args: { slug: string },
 ): Promise<Result<{ slug: string; trashedTo: string }>> {
   const bPath = bundlePath(config.content.dir, args.slug);
   if (!existsSync(bPath)) {
@@ -208,7 +237,7 @@ export async function ckDeleteArticle(
 
 export async function ckListBundle(
   config: ContentkeeperConfig,
-  args: { slug: string }
+  args: { slug: string },
 ): Promise<Result<{ slug: string; files: string[]; media: string[] }>> {
   const bPath = bundlePath(config.content.dir, args.slug);
   if (!existsSync(bPath)) {
