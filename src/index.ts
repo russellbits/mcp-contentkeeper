@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { resolveTransport, resolvePort, isAuthorized } from "./transport.ts";
 import { z } from "zod";
 import { loadConfig } from "./config.ts";
 import { log } from "./utils/log.ts";
@@ -137,6 +138,36 @@ server.tool(
 
 // ─── Start ────────────────────────────────────────────────────────────────────
 
-const transport = new StdioServerTransport();
-await server.connect(transport);
-log.info("contentkeeper ready");
+const mode = resolveTransport(process.argv.slice(2), process.env as Record<string, string | undefined>);
+
+if (mode === "http") {
+  const port = resolvePort(process.env as Record<string, string | undefined>);
+
+  const { createServer } = await import("node:http");
+  const { StreamableHTTPServerTransport } = await import(
+    "@modelcontextprotocol/sdk/server/streamableHttp.js"
+  );
+
+  const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
+
+  const token = process.env.CK_TOKEN;
+
+  const httpServer = createServer(async (req, res) => {
+    if (!isAuthorized(token, req.headers.authorization)) {
+      res.writeHead(401, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Unauthorized" }));
+      return;
+    }
+    await transport.handleRequest(req, res);
+  });
+
+  await server.connect(transport);
+
+  httpServer.listen(port, () => {
+    log.info(`contentkeeper HTTP transport listening on port ${port}`);
+  });
+} else {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+  log.info("contentkeeper ready");
+}

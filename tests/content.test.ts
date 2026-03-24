@@ -19,7 +19,7 @@ const tmpDir = join(tmpdir(), "ck-content-" + Date.now());
 function makeConfig(): ContentkeeperConfig {
   return {
     project: { name: "TestSite" },
-    content: { dir: join(tmpDir, "content"), extension: ".md", defaultStatus: "draft" },
+    content: { dir: join(tmpDir, "content"), extension: ".md", defaultStatus: "draft", sourceFile: "index.md" },
     staging: { dir: join(tmpDir, "staging"), format: "svx", filenamePattern: "[slug]/+page.svx" },
     build: { adapter: "shell", command: "echo ok", outputDir: join(tmpDir, "build"), validationFiles: [] },
     deploy: { adapter: "ftp", host: "h", port: 21, user: "u", password: "p", remotePath: "/", sync: "additive" },

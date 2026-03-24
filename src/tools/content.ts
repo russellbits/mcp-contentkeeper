@@ -29,7 +29,7 @@ export async function ckListArticles(
   args: ListArgs
 ): Promise<Result<ArticleSummary[]>> {
   try {
-    const slugs = listBundles(config.content.dir);
+    const slugs = listBundles(config.content.dir, config.content.sourceFile);
     const summaries: ArticleSummary[] = [];
 
     for (const slug of slugs) {

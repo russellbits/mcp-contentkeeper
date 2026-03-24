@@ -6,6 +6,7 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "bun src/index.ts",
+    "start:http": "bun src/index.ts --http",
     "dev": "bun --watch src/index.ts",
     "inspect": "CK_PROJECT=$HOME/Development/banapana npx @modelcontextprotocol/inspector bun src/index.ts",
     "typecheck": "bun tsc --noEmit"

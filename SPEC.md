@@ -145,7 +145,7 @@ AnythingLLM / Claude Desktop MCP config entry:
 ```json
 {
   "contentkeeper": {
-    "command": "bun",
+    "command": "/Users/russell/.bun/bin/bun",
     "args": ["/Users/russell/tools/contentkeeper/src/index.ts"],
     "env": {
       "CK_PROJECT": "/Users/russell/Development/banapana"
@@ -153,6 +153,8 @@ AnythingLLM / Claude Desktop MCP config entry:
   }
 }
 ```
+
+> **Note:** Claude Desktop and other launchers do not inherit your shell `$PATH`, so `bun` must be specified as a full path (e.g. `/Users/russell/.bun/bin/bun`). Running `which bun` in your terminal will give you the correct path.
 
 ### Language: TypeScript
 
@@ -242,7 +244,8 @@ contentkeeper is configured per-project via `contentkeeper.config.json` in the s
   "content": {
     "dir": "./content",
     "extension": ".md",
-    "defaultStatus": "draft"
+    "defaultStatus": "draft",
+    "sourceFile": "article.md"
   },
   "staging": {
     "dir": "./src/routes/articles",
